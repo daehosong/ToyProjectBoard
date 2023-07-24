@@ -2,15 +2,20 @@
 server:
   port: 8082
 
-# database 연동 설정
 spring:
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: true
+    thymeleaf:
+      cache: false
+# database 연동 설정
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/db_codingrecipe?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: user_codingrecipe
+    url: jdbc:mysql://127.0.0.1:3306/toyproject1
+    username: root
     password: 1234
-  thymeleaf:
-    cache: false
 
   # spring data jpa 설정
   jpa:
