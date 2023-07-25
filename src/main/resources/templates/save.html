@@ -1,17 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" href="/css/save.css">
 <head>
     <meta charset="UTF-8">
     <title>회원가입</title>
+    <!--    jquery cdn-->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 </head>
 <body>
 <!--  action속성 : form에 작성한 데이터를 보낼 주소-->
   <form action="/member/save" method="post" >
-    이메일 : <input type="text" name="memberEmail"><br>
-    비밀번호 : <input type="password" name="memberPassword"><br>
-    이름 :  <input type="text" name="memberName"><br>
+    이메일 : <input type="text" name="memberEmail" id="memberEmail" onblur="emailCheck()"><br>
+      <span id="check-result"></span><br>
+    비밀번호 : <input type="password" name="memberPassword"><br><br>
+    이름 :  <input type="text" name="memberName"><br><br>
     <input type="submit" value="회원가입">
     <input type="button" value="뒤로가기">
   </form>
 </body>
+<script th:inline="javascript">
+    const emailCheck = () => {
+        const email = document.getElementById("memberEmail").value;
+        const checkResult = document.getElementById("check-result");
+        console.log("입력값 : " , email);
+        $.ajax({
+            // 요청 방식 : post
+            // url : "email-check", 데이터 : 이메일
+            type:"post",
+            url:"/member/email-check",
+            data:{
+                "memberEmail": email
+            },
+            success: function(res){
+                console.log("요청성공",res);
+                if(res=="ok"){
+                    checkResult.innerHTML = "사용 가능한 아이디 입니다.";
+                    $("#check-result").addClass("emailCheckOk")
+                    $("#check-result").removeClass("emailCheckFail")
+                    $("#check-result").focus();
+                }
+                else{
+                    checkResult.innerHTML = "사용 중인 아이디 입니다.";
+                    $("#check-result").addClass("emailCheckFail")
+                    $("#check-result").removeClass("emailCheckOk")
+                    $("#check-result").focus();
+                }
+            },
+            error: function(err){
+                console.log("에러발생",err);
+            }
+        });
+    }
+</script>
 </html>
