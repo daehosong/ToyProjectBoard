@@ -85,4 +85,20 @@ public class MemberService {
         memberRepository.save(MemberEntity.toUpdateMemberEntity(memberDTO));
     }
 
+    public void deleteById(Long id) {
+        memberRepository.deleteById(id);
+    }
+
+    public String emailCheck(String memberEmail) {
+        Optional<MemberEntity> byMemberEmail = memberRepository.findByMemberEmail(memberEmail);
+        if (byMemberEmail.isPresent()) {
+            //  1. 조회 결과가 있을 시 (이메일을 가진 회원이 존재) -> 사용 불가능
+            return null;
+        }
+        else {
+            //  2. 조회 결과가 없을 시 (이메일을 가진 회원이 미존재) -> 사용 가능
+            return "ok";
+        }
+
+    }
 }
