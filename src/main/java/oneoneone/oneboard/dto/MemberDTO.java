@@ -1,9 +1,14 @@
 package oneoneone.oneboard.dto;
 
-import lombok.Data;
+import lombok.*;
 import oneoneone.oneboard.entity.MemberEntity;
 
-@Data
+// Member Data Transfer Object
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class MemberDTO {
     private Long id;
     private String memberEmail;

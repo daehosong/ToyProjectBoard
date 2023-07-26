@@ -23,6 +23,9 @@ public class MemberEntity {
     @Column
     private String memberName;
 
+    // 회원과 게시판 1:N 관계 설정
+
+
     //  DTO 에 담긴 내용을 Entity로 넘기는 과정
     public static MemberEntity toMemberEntity(MemberDTO memberDTO){
         MemberEntity memberEntity = new MemberEntity();
