@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
@@ -35,15 +36,15 @@ public class BoardController {
     @GetMapping("/board/list")
     public String boardListForm(Model model){
         //  DB에서 전체 게시글 데이터를 가져와서 list.html에 뿌려줌.
-        System.out.println("Model:"+model);
         List<BoardDTO> boardDTOList = boardService.findAll();
         model.addAttribute("boardList",boardDTOList);
         return "/board/boardList";
     }
-/*    @PostMapping("/board/list")
-    public String boardList(@ModelAttribute BoardDTO boardDTO){
-        System.out.println("boardDTO = " + boardDTO);
-
-        return "/board/boardList";
-    }*/
+    @GetMapping("/board/list/{boardId}")
+    public String boardListById(@PathVariable Long boardId,Model model){
+        boardService.updateHits(boardId);
+        BoardDTO boardDTO = boardService.findById(boardId);
+        model.addAttribute("board",boardDTO);
+        return "/board/postDetail";
+    }
 }
