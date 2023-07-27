@@ -12,7 +12,12 @@ public interface BoardRepository extends JpaRepository<BoardEntity , Long> {
     //  nativeQuery를 사용하게 되면 실제 DB에서 쓰는 쿼리 사용 가능
     //  update board_table set board_hits=board_hits+1 where id=?
     //  @Modifying : update나 delete 쿼리를 진행 해야 할 경우 Modifying 작성
+/*    @Modifying
+    @Query(value = "update BoardEntity b set b.boardHits=b.boardHits+1 where b.boardId=boardId")
+    void updateHits(@Param("boardId")Long boardId);
+}*/
+
     @Modifying
-    @Query(value = "update BoardEntity b set b.boardHits=b.boardHits+1 where b.id=id")
-    void updateHits(@Param("id")Long boardId);
+    @Query(value = "update BoardEntity b set b.boardHits=b.boardHits+1 where b.id=:id")
+    void updateHits(@Param("id") Long id);
 }
