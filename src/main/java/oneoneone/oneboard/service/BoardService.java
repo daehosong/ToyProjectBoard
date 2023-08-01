@@ -3,19 +3,15 @@ package oneoneone.oneboard.service;
 import lombok.RequiredArgsConstructor;
 import oneoneone.oneboard.dto.BoardDTO;
 import oneoneone.oneboard.entity.BoardEntity;
-import oneoneone.oneboard.entity.BoardFileEntity;
-import oneoneone.oneboard.repository.BoardFileRepository;
 import oneoneone.oneboard.repository.BoardRepository;
+import oneoneone.oneboard.repository.MemberRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,39 +25,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
-    private final BoardFileRepository boardFileRepository;
-    public void save(BoardDTO boardDTO) throws IOException {
-        //  파일 첨부 여부에 따라 로직 분리
-        if(boardDTO.getBoardFile().isEmpty()){
-            BoardEntity boardEntity = BoardEntity.toSaveEntity(boardDTO);
-            boardRepository.save(boardEntity);
-
-        }
-        else{
-        //  1. DTO 담긴 파일을 꺼내기
-        //  2. 파일 이름 가져오기
-        //  3. 서버 저장용 이름을 만들기
-            // ex) apple.jpg ==> 23415151_apple.jpg 처럼 난수를 붙여 생성
-        //  4. 저장 경로 설정
-        //  5. 해당 경로에 파일 저장
-        //  6. board_table에 해당 데이터 save 처리
-        //  7. board_file_table에 해당 데이터 save 처리
-            MultipartFile boardFile = boardDTO.getBoardFile();          //  1
-            String originalFilename = boardFile.getOriginalFilename();  //  2
-            String storedFileName = System.currentTimeMillis() + "_" + originalFilename;    //  3
-            //currentTimeMillis => 1970년01월01일을 기준으로 발생한 현재 시간 차이
-            String savePath = "D:/springFolder/"+storedFileName;        //  4
-            boardFile.transferTo(new File(savePath));                   //  5
-            BoardEntity boardEntity = BoardEntity.toSaveFileEntity(boardDTO);
-            Long saveId = boardRepository.save(boardEntity).getId();
-            BoardEntity board= boardRepository.findById(saveId).get();
-
-            BoardFileEntity boardFileEntity =BoardFileEntity.toBoardFileEntity(board,originalFilename,storedFileName);
-            boardFileRepository.save(boardFileEntity);
-        }
+    public void save(BoardDTO boardDTO) {
+        BoardEntity boardEntity = BoardEntity.toSaveEntity(boardDTO);
+        boardRepository.save(boardEntity);
     }
-    //  부모 엔티티에서 자식 엔티티로 접근할 때는 @Transactional 어노테이션 사용 해야함.
-    @Transactional
     public List<BoardDTO> findAll() {
         List<BoardEntity> boardEntityList = boardRepository.findAll();
         List<BoardDTO> boardDTOList = new ArrayList<>();
@@ -74,9 +41,6 @@ public class BoardService {
     public void updateHits(Long id) {
         boardRepository.updateHits(id);
     }
-
-    //  부모 엔티티에서 자식 엔티티로 접근할 때는 @Transactional 어노테이션 사용 해야함.
-    @Transactional
     public BoardDTO findById(Long id) {
         Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(id);
         if (optionalBoardEntity.isPresent()) {
@@ -122,3 +86,49 @@ public class BoardService {
 
 }
 
+
+/*@Service
+@RequiredArgsConstructor
+public class BoardService {
+    private final BoardRepository boardRepository;
+
+
+    public void save(BoardDTO boardDTO) {
+        BoardEntity boardEntity = BoardEntity.toSaveEntity(boardDTO);
+        boardRepository.save(boardEntity);
+    }
+    @Transactional
+    public List<BoardDTO> findAll() {
+        List<BoardEntity> boardEntityList = boardRepository.findAll();
+        List<BoardDTO> boardDTOList = new ArrayList<>();
+        for(BoardEntity boardEntity : boardEntityList){
+            boardDTOList.add(BoardDTO.toBoardDTO(boardEntity));
+        }
+        return boardDTOList;
+    }
+
+    //  수동적인 쿼리를 수행 해야 할 경우 @Transactional 사용하여 영송성 컨텍스트들을 처리 하는 경우
+    @Transactional
+    public void updateHits(Long boardId) {
+        boardRepository.updateHits(boardId);
+    }
+
+    @Transactional
+    public BoardDTO findById(Long boardId) {
+        Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(boardId);
+        if(optionalBoardEntity.isPresent()){
+            BoardEntity boardEntity = optionalBoardEntity.get();
+            BoardDTO boardDTO = BoardDTO.toBoardDTO(boardEntity);
+            return boardDTO;
+        }
+        else{
+            return null;
+        }
+    }
+    public BoardDTO update(BoardDTO boardDTO){
+        BoardEntity boardEntity = BoardEntity.toUpdateEntity(boardDTO);
+        boardRepository.save(boardEntity);
+        return findById(boardDTO.getBoardId());
+    }
+
+}*/
