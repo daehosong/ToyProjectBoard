@@ -44,6 +44,8 @@
     title: <input type="text" name="boardTitle" th:value="${boardUpdate.boardTitle}"> <br>
     contents: <textarea name="boardContents" cols="30" rows="10" th:text="${boardUpdate.boardContents}"></textarea> <br>
     <input type="hidden" name="boardHits" th:value="${boardUpdate.boardHits}">
+    file: <input type="file" name="boardFile"> <br>
+    <input hidden="hidden" name="fileAttached" th:value="${boardUpdate.fileAttached}">
     <input type="button" value="글수정" onclick="boardUpdate()">
 </form>
 <script th:inline="javascript">
