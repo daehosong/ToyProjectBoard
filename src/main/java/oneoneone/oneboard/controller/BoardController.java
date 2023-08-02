@@ -2,7 +2,9 @@ package oneoneone.oneboard.controller;
 
 import lombok.RequiredArgsConstructor;
 import oneoneone.oneboard.dto.BoardDTO;
+import oneoneone.oneboard.dto.CommentDTO;
 import oneoneone.oneboard.service.BoardService;
+import oneoneone.oneboard.service.CommentService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -11,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -18,7 +21,7 @@ import java.util.List;
 @RequestMapping("/board")
 public class BoardController {
     private final BoardService boardService;
-
+    private final CommentService commentService;
     @GetMapping()
     public String boardMain(){
         return "/board/boardMain";
@@ -51,6 +54,9 @@ public class BoardController {
          */
         boardService.updateHits(id);
         BoardDTO boardDTO = boardService.findById(id);
+        //  댓글 목록 출력하기
+        List<CommentDTO> commentDTOList = commentService.findAll(id);
+        model.addAttribute("commentList",commentDTOList);
         model.addAttribute("board", boardDTO);
         model.addAttribute("page",pageable.getPageNumber());
         return "/board/postDetail";
@@ -100,59 +106,3 @@ public class BoardController {
     }
 
 }
-
-
-
-/*@Controller
-@RequiredArgsConstructor
-public class BoardController {
-
-    private final BoardService boardService;
-
-    @GetMapping("/board")
-    public String boardMain(){
-        return "/board/boardMain";
-    }
-    @GetMapping("/board/save")
-    public String boardSaveForm(){
-    return "/board/boardSave";
-    }
-    @PostMapping("/board/save")
-    public String boardSave(@ModelAttribute BoardDTO boardDTO){
-        System.out.println("boardDTO = " + boardDTO);
-        boardService.save(boardDTO);
-        return "/board/boardMain";
-    }
-
-    @GetMapping("/board/list")
-    public String boardListForm(Model model){
-        //  DB에서 전체 게시글 데이터를 가져와서 list.html에 뿌려줌.
-        List<BoardDTO> boardDTOList = boardService.findAll();
-        model.addAttribute("boardList",boardDTOList);
-        return "/board/boardList";
-    }
-    @GetMapping("/board/list/{boardId}")
-    public String boardListById(@PathVariable Long boardId,Model model){
-        boardService.updateHits(boardId);
-        BoardDTO boardDTO = boardService.findById(boardId);
-        model.addAttribute("board",boardDTO);
-        return "/board/postDetail";
-    }
-
-    @GetMapping("/board/update/{boardId}")
-    public String updateForm(@PathVariable Long boardId, Model model){
-        BoardDTO boardDTO = boardService.findById(boardId);
-        System.out.println("boardId "+ boardDTO.getBoardId());
-        model.addAttribute("boardUpdate",boardDTO);
-        return "/board/postUpdate";
-    }
-
-    @PostMapping("/board/update")
-    public String update(@ModelAttribute BoardDTO boardDTO,Model model){
-        BoardDTO board = boardService.update(boardDTO);
-        System.out.println("boardId 2번째 호출 "+ board.getBoardId());
-        model.addAttribute("board",board);
-        return "/board/postDetail";
-}
-
-}*/

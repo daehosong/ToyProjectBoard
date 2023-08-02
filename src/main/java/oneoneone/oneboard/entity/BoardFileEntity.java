@@ -26,6 +26,8 @@ public class BoardFileEntity extends BaseEntity{
     @JoinColumn(name ="board_id")
     private BoardEntity boardEntity;
 
+
+
     public static BoardFileEntity toBoardFileEntity(BoardEntity boardEntity,
                                                     String originalFileName,
                                                     String storedFileName) {
